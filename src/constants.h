@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-#define is_known(x) (x >= 0)
+#define is_known(x) (!isnan(x))
 
 #define NUM_SPECIES         3
 #define NUM_ROWS            3
