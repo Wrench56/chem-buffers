@@ -155,6 +155,8 @@ int main(void) {
                 data[selected_row][selected_col] = 0.0f;
             }
         }
+
+        delay(250);
     }
 
     gfx_End();
