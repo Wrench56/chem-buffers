@@ -144,9 +144,9 @@ int main(void) {
             if (selected_row == ROW_K) {
                 K_value = NAN;
             } else if (selected_row == 0) {
-                data[0][selected_col] = 0;
+                data[0][selected_col] = NAN;
             } else {
-                data[selected_row][selected_col] = 0.0f;
+                data[selected_row][selected_col] = NAN;
             }
         }
 
