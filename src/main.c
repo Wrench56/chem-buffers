@@ -4,18 +4,6 @@
 #include "input.h"
 #include "constants.h"
 
-const char *species[NUM_SPECIES] = { "A", "B", "C" };
-const char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
-float data[NUM_ROWS][NUM_SPECIES] = {
-    {1, 1, 1},
-    {NAN, NAN, NAN},
-    {NAN, NAN, NAN}
-};
-float K_value = NAN;
-
-int selected_row = 0;
-int selected_col = 0;
-
 /* Draw a message at the bottom line */
 void draw_error_line(const char *msg) {
     gfx_SetColor(255);
@@ -156,7 +144,7 @@ int main(void) {
             }
         }
 
-        delay(250);
+        delay(200);
     }
 
     gfx_End();

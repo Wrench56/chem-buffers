@@ -11,3 +11,15 @@
 #define ENTER_LINE_Y        230
 #define ROW_K               3
 #define NUM_SELECTABLE_ROWS 4
+
+extern const char *species[NUM_SPECIES] = { "A", "B", "C" };
+extern char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
+extern float data[NUM_ROWS][NUM_SPECIES] = {
+    {1, 1, 1},
+    {NAN, NAN, NAN},
+    {NAN, NAN, NAN}
+};
+extern float K_value = NAN;
+
+extern int selected_row = 0;
+extern int selected_col = 0;
