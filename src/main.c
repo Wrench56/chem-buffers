@@ -1,3 +1,5 @@
+#include <keypadc.h>
+
 #include "statusbar.h"
 #include "input.h"
 
@@ -13,8 +15,8 @@ const char *species[NUM_SPECIES] = { "A", "B", "C" };
 const char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
 float data[NUM_ROWS][NUM_SPECIES] = {
     {1, 1, 1},
-    {0.0, 0.0, 0.0},
-    {0.0, 0.0, 0.0}
+    {NAN, NAN, NAN},
+    {NAN, NAN, NAN}
 };
 
 int selected_row = 0;
@@ -59,6 +61,8 @@ void gui_draw_table(void) {
             char buf[12];
             if (row == 0) {
                 sprintf(buf, "%i", (int)data[row][col]);
+            } else if (isnan(data[row][col])) {
+                strcpy(buf, " ");
             } else {
                 sprintf(buf, "%.3f", data[row][col]);
             }
