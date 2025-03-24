@@ -1,20 +1,12 @@
+#pragma once
+
 #include <graphx.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <tice.h>
 
-typedef enum {
-    MODE_NORMAL,
-    MODE_ACIDIC,
-    MODE_BASIC
-} IceMode;
-
-typedef enum {
-    STATUS_READY,
-    STATUS_INCOMPLETE,
-    STATUS_ERROR
-} IceStatus;
+#include "icebox.h"
 
 void draw_status_bar(IceMode mode, IceStatus status) {
     gfx_SetColor(200);

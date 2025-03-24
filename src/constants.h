@@ -1,3 +1,5 @@
+#pragma once
+
 #include <math.h>
 
 #define is_known(x) (x >= 0)
@@ -12,14 +14,14 @@
 #define ROW_K               3
 #define NUM_SELECTABLE_ROWS 4
 
-extern const char *species[NUM_SPECIES] = { "A", "B", "C" };
-extern char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
-extern float data[NUM_ROWS][NUM_SPECIES] = {
+const char *species[NUM_SPECIES] = { "A", "B", "C" };
+char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
+float data[NUM_ROWS][NUM_SPECIES] = {
     {1, 1, 1},
     {NAN, NAN, NAN},
     {NAN, NAN, NAN}
 };
-extern float K_value = NAN;
+float K_value = NAN;
 
-extern int selected_row = 0;
-extern int selected_col = 0;
+int selected_row = 0;
+int selected_col = 0;
