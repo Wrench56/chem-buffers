@@ -11,6 +11,7 @@ float data[NUM_ROWS][NUM_SPECIES] = {
     {NAN, NAN, NAN},
     {NAN, NAN, NAN}
 };
+float K_value = NAN;
 
 int selected_row = 0;
 int selected_col = 0;
@@ -64,6 +65,35 @@ void gui_draw_table(void) {
     }
 }
 
+void gui_draw_vars(void) {
+    // Draw K value
+    int k_y = TABLE_Y + NUM_ROWS * CELL_HEIGHT + 5;
+    int k_x = TABLE_X + CELL_WIDTH / 2;
+
+    gfx_PrintStringXY("K =", TABLE_X - 45, k_y);
+
+    // Highlight if selected
+    if (selected_row == ROW_K) {
+        gfx_SetColor(200);
+        gfx_FillRectangle(k_x - 2, k_y - 2, 70, 12);
+        gfx_SetTextFGColor(0);
+    }
+
+    // Draw value
+    char k_buf[16];
+    if (isnan(K_value)) {
+        strcpy(k_buf, " ");
+    } else {
+        sprintf(k_buf, "%.5f", K_value);
+    }
+    gfx_PrintStringXY(k_buf, k_x, k_y);
+}
+
+void gui_draw(void) {
+    gui_draw_table();
+    gui_draw_vars();
+}
+
 int main(void) {
     gfx_Begin();
 
@@ -72,7 +102,7 @@ int main(void) {
 
     while (1) {
         // General draw
-        gui_draw_table();
+        gui_draw();
         draw_status_bar(mode, status);
 
         input_wait_key();
@@ -82,30 +112,44 @@ int main(void) {
         if (kb_IsDown(kb_KeyClear)) break;
 
         // Arrow keys
-        if (kb_IsDown(kb_KeyDown) && selected_row < NUM_ROWS - 1)     selected_row++;
-        if (kb_IsDown(kb_KeyUp)   && selected_row > 0)                selected_row--;
-        if (kb_IsDown(kb_KeyRight) && selected_col < NUM_SPECIES - 1) selected_col++;
-        if (kb_IsDown(kb_KeyLeft)  && selected_col > 0)               selected_col--;
+        if (kb_IsDown(kb_KeyDown) && selected_row < NUM_SELECTABLE_ROWS - 1) selected_row++;
+        if (kb_IsDown(kb_KeyUp)   && selected_row > 0)                       selected_row--;
+        if (kb_IsDown(kb_KeyRight) && selected_col < NUM_SPECIES - 1)        selected_col++;
+        if (kb_IsDown(kb_KeyLeft)  && selected_col > 0)                      selected_col--;
 
         // Prompt input
         if (kb_IsDown(kb_KeyEnter)) {
-            char prompt_msg[40];
-            sprintf(prompt_msg, "%s's %s:", species[selected_col], rows[selected_row]);
-            float val = prompt_value(prompt_msg);
-
-            if (!isnan(val)) {
-                data[selected_row][selected_col] = val;
+            if (selected_row == ROW_K) {
+                float val = prompt_value("Enter K:");
+                if (!isnan(val)) {
+                    K_value = val;
+                } else {
+                    gfx_Begin();
+                    gui_draw();
+                    draw_error_line("Invalid input. Press any key.");
+                    input_wait_key();
+                }
             } else {
-                gfx_Begin();
-                gui_draw_table();
-                draw_error_line("Invalid input. Press any key.");
-                input_wait_key();
+                char prompt_msg[40];
+                sprintf(prompt_msg, "%s's %s:", species[selected_col], rows[selected_row]);
+                float val = prompt_value(prompt_msg);
+        
+                if (!isnan(val)) {
+                    data[selected_row][selected_col] = val;
+                } else {
+                    gfx_Begin();
+                    gui_draw();
+                    draw_error_line("Invalid input. Press any key.");
+                    input_wait_key();
+                }
             }
         }
 
         // Clear field
         if (kb_IsDown(kb_KeyDel)) {
-            if (selected_row == 0) {
+            if (selected_row == ROW_K) {
+                K_value = NAN;
+            } else if (selected_row == 0) {
                 data[0][selected_col] = 0;
             } else {
                 data[selected_row][selected_col] = 0.0f;
