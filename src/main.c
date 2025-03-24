@@ -96,6 +96,8 @@ int main(void) {
             if (!isnan(val)) {
                 data[selected_row][selected_col] = val;
             } else {
+                gfx_Begin();
+                gui_draw_table();
                 draw_error_line("Invalid input. Press any key.");
                 input_wait_key();
             }
