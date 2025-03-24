@@ -1,6 +1,7 @@
 #include <keypadc.h>
 
 #include "statusbar.h"
+#include "icebox.h"
 #include "input.h"
 #include "constants.h"
 
@@ -85,13 +86,18 @@ void gui_draw(void) {
 int main(void) {
     gfx_Begin();
 
-    IceMode mode = MODE_BASIC;
+    IceMode mode = MODE_NORMAL;
     IceStatus status = STATUS_INCOMPLETE;
 
     while (1) {
         // General draw
         gui_draw();
         draw_status_bar(mode, status);
+
+        // Logic
+        status = is_icebox_solvable(data, mode)
+            ? STATUS_READY
+            : STATUS_INCOMPLETE;
 
         input_wait_key();
         kb_Scan();
