@@ -54,44 +54,72 @@ void gui_draw_table(void) {
     }
 }
 
-void gui_draw_vars(void) {
-    // Draw K value
-    int k_y = TABLE_Y + NUM_ROWS * CELL_HEIGHT + 5;
-    int k_x = TABLE_X + CELL_WIDTH / 2;
+void gui_draw_vars(IceMode mode) {
+    
+    int y = TABLE_Y + NUM_ROWS * CELL_HEIGHT + 5;
+    int x = TABLE_X + CELL_WIDTH / 2;
 
-    gfx_PrintStringXY("K =", TABLE_X - 45, k_y);
-
-    // Highlight if selected
+    // Draw K
+    gfx_PrintStringXY("K =", TABLE_X - 45, y);
     if (selected_row == ROW_K) {
         gfx_SetColor(200);
-        gfx_FillRectangle(k_x - 2, k_y - 2, 70, 12);
+        gfx_FillRectangle(x - 2, y - 2, 70, 12);
         gfx_SetTextFGColor(0);
     }
-
-    // Draw value
-    char k_buf[16];
+    char buf[16];
     if (isnan(K_value)) {
-        strcpy(k_buf, " ");
+        strcpy(buf, " ");
     } else {
-        sprintf(k_buf, "%.5f", K_value);
+        sprintf(buf, "%.5f", K_value);
     }
-    gfx_PrintStringXY(k_buf, k_x, k_y);
+    gfx_PrintStringXY(buf, x, y);
+    
+    if (mode != MODE_ACIDIC && mode != MODE_BASIC) return;
+
+    y += 12;
+    gfx_PrintStringXY("pH =", TABLE_X - 45, y);
+    if (selected_row == ROW_PH) {
+        gfx_SetColor(200);
+        gfx_FillRectangle(x - 2, y - 2, 70, 12);
+        gfx_SetTextFGColor(0);
+    }
+    if (isnan(PH_value)) {
+        strcpy(buf, " ");
+    } else {
+        sprintf(buf, "%.2f", PH_value);
+    }
+    gfx_PrintStringXY(buf, x, y);
+
+    y += 12;
+    gfx_PrintStringXY("Dissoc %% =", TABLE_X - 45, y);
+    if (selected_row == ROW_DISS) {
+        gfx_SetColor(200);
+        gfx_FillRectangle(x - 2, y - 2, 70, 12);
+        gfx_SetTextFGColor(0);
+    }
+    if (isnan(Dissoc_value)) {
+        strcpy(buf, " ");
+    } else {
+        sprintf(buf, "%.1f%%", Dissoc_value);
+    }
+    gfx_PrintStringXY(buf, x, y);
+    
 }
 
-void gui_draw(void) {
+void gui_draw(IceMode mode) {
     gui_draw_table();
-    gui_draw_vars();
+    gui_draw_vars(mode);
 }
 
 int main(void) {
     gfx_Begin();
 
-    IceMode mode = MODE_NORMAL;
+    IceMode mode = MODE_ACIDIC;
     IceStatus status = STATUS_INCOMPLETE;
 
     while (1) {
         // General draw
-        gui_draw();
+        gui_draw(mode);
         draw_status_bar(mode, status);
 
         // Logic
@@ -113,26 +141,48 @@ int main(void) {
 
         // Prompt input
         if (kb_IsDown(kb_KeyEnter)) {
+            float val = NAN;
+        
             if (selected_row == ROW_K) {
-                float val = prompt_value("Enter K:");
+                val = prompt_value("Enter K:");
                 if (!isnan(val)) {
                     K_value = val;
                 } else {
                     gfx_Begin();
-                    gui_draw();
+                    gui_draw(mode);
+                    draw_error_line("Invalid input. Press any key.");
+                    input_wait_key();
+                }
+            } else if (selected_row == ROW_PH) {
+                val = prompt_value("Enter pH:");
+                if (!isnan(val)) {
+                    PH_value = val;
+                } else {
+                    gfx_Begin();
+                    gui_draw(mode);
+                    draw_error_line("Invalid input. Press any key.");
+                    input_wait_key();
+                }
+            } else if (selected_row == ROW_DISS) {
+                val = prompt_value("Enter % dissociation:");
+                if (!isnan(val)) {
+                    Dissoc_value = val;
+                } else {
+                    gfx_Begin();
+                    gui_draw(mode);
                     draw_error_line("Invalid input. Press any key.");
                     input_wait_key();
                 }
             } else {
                 char prompt_msg[40];
                 sprintf(prompt_msg, "%s's %s:", species[selected_col], rows[selected_row]);
-                float val = prompt_value(prompt_msg);
+                val = prompt_value(prompt_msg);
         
                 if (!isnan(val)) {
                     data[selected_row][selected_col] = val;
                 } else {
                     gfx_Begin();
-                    gui_draw();
+                    gui_draw(mode);
                     draw_error_line("Invalid input. Press any key.");
                     input_wait_key();
                 }
@@ -142,20 +192,17 @@ int main(void) {
         // Solve
         if (kb_IsDown(kb_KeyAdd)) {
             const char *msg = icebox_solve_all(data, mode);
-            gui_draw();
+            gui_draw(mode);
             draw_error_line(msg);
             input_wait_key();
         }
 
         // Clear field
         if (kb_IsDown(kb_KeyDel)) {
-            if (selected_row == ROW_K) {
-                K_value = NAN;
-            } else if (selected_row == 0) {
-                data[0][selected_col] = NAN;
-            } else {
-                data[selected_row][selected_col] = NAN;
-            }
+            if (selected_row == ROW_K) K_value = NAN;
+            else if (selected_row == ROW_PH) PH_value = NAN;
+            else if (selected_row == ROW_DISS) Dissoc_value = NAN;
+            else data[selected_row][selected_col] = NAN;
         }
 
         delay(200);

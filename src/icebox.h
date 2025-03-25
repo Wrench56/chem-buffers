@@ -98,21 +98,19 @@ bool is_icebox_solvable(float data[3][3], IceMode mode) {
 
 #define is_known(x) (!isnan(x))
 
-// Global K value (must exist outside this function)
 extern float K_value;
+extern float PH_value;
+extern float Dissoc_value;
 
-const char* icebox_solve_all(float data[3][3], IceMode mode) {
+const char* solve_normal(float data[3][3]) {
     float *coeffs   = data[0];
     float *initials = data[1];
     float *finals   = data[2];
 
-    if (mode != MODE_NORMAL)
-        return "Only MODE_NORMAL is supported";
-
     // Case: All initials + K - solve for x using actual ICE expression
     if (is_known(initials[0]) && is_known(initials[1]) && is_known(initials[2]) &&
-        !is_known(finals[0]) && !is_known(finals[1]) && !is_known(finals[2]) &&
-        is_known(K_value)) {
+    !is_known(finals[0]) && !is_known(finals[1]) && !is_known(finals[2]) &&
+    is_known(K_value)) {
 
         float a_i = initials[0], b_i = initials[1], c_i = initials[2];
         float a = coeffs[0], b = coeffs[1], c = coeffs[2];
@@ -126,4 +124,42 @@ const char* icebox_solve_all(float data[3][3], IceMode mode) {
     }
 
     return "No solvable case found";
+}
+
+
+const char* solve_acidic(float data[3][3]) {
+    float *coeffs   = data[0];
+    float *initials = data[1];
+    float *finals   = data[2];
+
+    if (is_known(initials[0]) && is_known(initials[1]) && is_known(initials[2]) &&
+    !is_known(finals[0]) && !is_known(finals[1]) && !is_known(finals[2]) &&
+    is_known(K_value)) {
+
+        float a_i = initials[0], b_i = initials[1], c_i = initials[2];
+        float a = coeffs[0], b = coeffs[1], c = coeffs[2];
+
+        double x = pow((K_value * pow(a_i, a)) / (pow(b, b) * pow(c, c)), (1.0f / (b+c)));
+        data[2][0] = a_i - a * (float) x;
+        data[2][1] = b_i + b * (float) x;
+        data[2][2] = c_i + c * (float) x;
+
+        PH_value = -log10f(data[2][1]);
+        Dissoc_value = (data[2][1] / a_i) * 100;
+
+        return "Solved using initials & K";
+    }
+
+    return "No solvable case found";
+}
+
+const char* icebox_solve_all(float data[3][3], IceMode mode) {
+    switch (mode) {
+        case MODE_NORMAL:
+            return solve_normal(data);
+        case MODE_ACIDIC:
+            return solve_acidic(data);
+        default:
+            return "No solvable case found";
+    }
 }

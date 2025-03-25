@@ -12,9 +12,11 @@
 #define TABLE_Y             40
 #define ENTER_LINE_Y        230
 #define ROW_K               3
-#define NUM_SELECTABLE_ROWS 4
+#define ROW_PH              4
+#define ROW_DISS            5
+#define NUM_SELECTABLE_ROWS 6
 
-const char *species[NUM_SPECIES] = { "A", "B", "C" };
+const char *species[NUM_SPECIES] = { "HA", "H+", "OH-" };
 char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
 float data[NUM_ROWS][NUM_SPECIES] = {
     {1, 1, 1},
@@ -22,6 +24,8 @@ float data[NUM_ROWS][NUM_SPECIES] = {
     {NAN, NAN, NAN}
 };
 float K_value = NAN;
+float PH_value = NAN;
+float Dissoc_value = NAN;
 
 int selected_row = 0;
 int selected_col = 0;
