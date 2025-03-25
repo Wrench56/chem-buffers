@@ -16,8 +16,8 @@
 #define ROW_DISS            5
 #define NUM_SELECTABLE_ROWS 6
 
-const char *species[NUM_SPECIES] = { "HA", "H+", "OH-" };
-char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
+char *species[NUM_SPECIES] = { "HA", "H+", "OH-" };
+const char *rows[NUM_ROWS] = { "Coeff", "Initial", "Final" };
 float data[NUM_ROWS][NUM_SPECIES] = {
     {1, 1, 1},
     {NAN, NAN, NAN},

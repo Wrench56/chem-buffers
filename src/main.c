@@ -114,7 +114,7 @@ void gui_draw(IceMode mode) {
 int main(void) {
     gfx_Begin();
 
-    IceMode mode = MODE_ACIDIC;
+    IceMode mode = MODE_NORMAL;
     IceStatus status = STATUS_INCOMPLETE;
 
     while (1) {
@@ -204,6 +204,29 @@ int main(void) {
             else if (selected_row == ROW_DISS) Dissoc_value = NAN;
             else data[selected_row][selected_col] = NAN;
         }
+
+        // Mode
+        if (kb_IsDown(kb_KeyAlpha)) {
+            mode = (mode + 1) % 3;
+            switch (mode) {
+                case MODE_NORMAL:
+                    species[0] = "A  ";
+                    species[1] = "B  ";
+                    species[2] = "C  ";
+                    break;
+                case MODE_ACIDIC:
+                    species[0] = "HA";
+                    species[1] = "H+ ";
+                    species[2] = "OH-";
+                    break;
+                case MODE_BASIC:
+                    species[0] = "B  ";
+                    species[1] = "BH+";
+                    species[2] = "OH-";
+                    break;
+            }
+        }
+
 
         delay(200);
     }
