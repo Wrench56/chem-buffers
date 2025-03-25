@@ -131,13 +131,12 @@ const char* solve_acidic(float data[3][3]) {
     float *coeffs   = data[0];
     float *initials = data[1];
     float *finals   = data[2];
+    float a_i = initials[0], b_i = initials[1], c_i = initials[2];
+    float a = coeffs[0], b = coeffs[1], c = coeffs[2];
 
     if (is_known(initials[0]) && is_known(initials[1]) && is_known(initials[2]) &&
     !is_known(finals[0]) && !is_known(finals[1]) && !is_known(finals[2]) &&
     is_known(K_value)) {
-
-        float a_i = initials[0], b_i = initials[1], c_i = initials[2];
-        float a = coeffs[0], b = coeffs[1], c = coeffs[2];
 
         double x = pow((K_value * pow(a_i, a)) / (pow(b, b) * pow(c, c)), (1.0f / (b+c)));
         data[2][0] = a_i - a * (float) x;
@@ -148,6 +147,18 @@ const char* solve_acidic(float data[3][3]) {
         Dissoc_value = (data[2][1] / a_i) * 100;
 
         return "Solved using initials & K";
+    }
+
+    if (is_known(a_i) && is_known(Dissoc_value) && is_known(b_i) && is_known(c_i)) {
+        double x = (Dissoc_value / 100) * initials[0];
+        data[2][0] = a_i - a * (float) x;
+        data[2][1] = b_i + b * (float) x;
+        data[2][2] = c_i + c * (float) x;
+
+        PH_value = -log10f(data[2][1]);
+        K_value = (pow(data[2][1], b)*pow(data[2][2], c)) / pow(data[2][0], a);
+
+        return "Solved using initials & \% Dissociation";
     }
 
     return "No solvable case found";
