@@ -139,6 +139,14 @@ int main(void) {
             }
         }
 
+        // Solve
+        if (kb_IsDown(kb_KeyAdd)) {
+            const char *msg = icebox_solve_all(data, mode);
+            gui_draw();
+            draw_error_line(msg);
+            input_wait_key();
+        }
+
         // Clear field
         if (kb_IsDown(kb_KeyDel)) {
             if (selected_row == ROW_K) {
