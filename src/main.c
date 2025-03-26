@@ -47,7 +47,7 @@ void gui_draw_table(void) {
             } else if (isnan(data[row][col])) {
                 strcpy(buf, " ");
             } else {
-                sprintf(buf, "%.3f", data[row][col]);
+                sprintf(buf, "%.5f", data[row][col]);
             }
             gfx_PrintStringXY(buf, x + 2, y + 5);
         }
@@ -74,7 +74,7 @@ void gui_draw_vars(IceMode mode) {
     }
     gfx_PrintStringXY(buf, x, y);
     
-    if (mode != MODE_ACIDIC && mode != MODE_BASIC) return;
+    if (mode == MODE_NORMAL) return;
 
     y += 12;
     gfx_PrintStringXY("pH =", TABLE_X - 45, y);
@@ -90,6 +90,7 @@ void gui_draw_vars(IceMode mode) {
     }
     gfx_PrintStringXY(buf, x, y);
 
+    if (mode == MODE_ICF) return;
     y += 12;
     gfx_PrintStringXY("Dissoc %% =", TABLE_X - 45, y);
     if (selected_row == ROW_DISS) {
@@ -207,7 +208,7 @@ int main(void) {
 
         // Mode
         if (kb_IsDown(kb_KeyAlpha)) {
-            mode = (mode + 1) % 3;
+            mode = (mode + 1) % 4;
             switch (mode) {
                 case MODE_NORMAL:
                     species[0] = "A  ";
@@ -224,9 +225,14 @@ int main(void) {
                     species[1] = "BH+";
                     species[2] = "OH-";
                     break;
+                case MODE_ICF:
+                    // Weak acidic
+                    species[0] = "HA ";
+                    species[1] = "OH-";
+                    species[2] = "A- ";
+                    break;
             }
         }
-
 
         delay(200);
     }

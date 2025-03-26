@@ -18,6 +18,7 @@ void draw_status_bar(IceMode mode, IceStatus status) {
     const char *mode_str = "Normal";
     if (mode == MODE_ACIDIC) mode_str = "Acidic";
     else if (mode == MODE_BASIC) mode_str = "Basic";
+    else if (mode == MODE_ICF) mode_str = "ICF";
 
     // Status string
     const char *status_str = "Incomplete";
@@ -28,6 +29,7 @@ void draw_status_bar(IceMode mode, IceStatus status) {
     snprintf(left_buf, sizeof(left_buf), "Mode: %s", mode_str);
     gfx_PrintStringXY(left_buf, 2, 1);
 
+    
     int status_x = LCD_WIDTH - (strlen(status_str) * 8) - 4;
     gfx_PrintStringXY(status_str, status_x, 1);
 }

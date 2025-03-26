@@ -4,6 +4,8 @@
 
 #define is_known(x) (!isnan(x))
 
+#define EPSILON 0.00000001f
+
 #define NUM_SPECIES         3
 #define NUM_ROWS            3
 #define CELL_WIDTH          60
